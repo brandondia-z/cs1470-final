@@ -1,10 +1,9 @@
 import tensorflow as tf
-from preprocess import get_data, test_thing
+from preprocess import get_data
 
 def main():
     print("Hello world!")
     get_data()
-    test_thing()
     return 1
 
 

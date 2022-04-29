@@ -5,9 +5,7 @@ import numpy as np
 def main():
     print("Hello world!")
     timbres, pitches = get_data(0, 100)
-    write_to = open('data/processed.txt', 'w')
-    write_to.write(str(timbres))
-    write_to.close()
+    np.savetxt('data/processed.txt', timbres)
     return 1
 
 

@@ -32,10 +32,6 @@ def get_data(start, end):
     print("Gathering data...")
     printProgressBar(0, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
     f = h5py.File('data/MillionSongSubset/A/A/A/TRAAAAW128F429D538.h5', 'r')
-    # print(list(f.keys()))
-    # print(list(f['analysis'].keys()))
-    # print(f['analysis']['segments_pitches'].shape)
-    # print(f['analysis']['segments_timbre'].shape)
     segments_timbres = []
     segments_pitches = []
     i = 0
@@ -44,13 +40,10 @@ def get_data(start, end):
             if(i>=start):
                 if(f.endswith('.h5')):
                     file = h5py.File(dirName + '/' + f, 'r')
-                    # print(np.array(file['analysis']['segments_timbre'][:]).shape)
-                    # time.sleep(5)
                     segments_timbres.append(np.array(file['analysis']['segments_timbre'][:]))
                     segments_pitches.append(file['analysis']['segments_pitches'])
                     file.close()
                 printProgressBar(i + 1, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
                 i+=1
-                if(i>end):
-                    print(np.array(segments_timbres[0]).shape)
+                if(i>end+1):
                     return (segments_timbres, segments_pitches)

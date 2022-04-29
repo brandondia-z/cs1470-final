@@ -45,7 +45,7 @@ def get_data(start, end):
                 if(f.endswith('.h5')):
                     file = h5py.File(dirName + '/' + f, 'r')
                     print(np.array(file['analysis']['segments_timbre'][:]).shape)
-                    time.sleep(5)
+                    # time.sleep(5)
                     segments_timbres.append(np.array(file['analysis']['segments_timbre'][:]))
                     segments_pitches.append(file['analysis']['segments_pitches'])
                     file.close()

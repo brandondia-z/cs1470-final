@@ -6,14 +6,15 @@ import matplotlib.pyplot as plt
 
 # Defines Model class
 class Model(torch.nn.Module):
-    def __init__(self, input_size): #Might alter parameters
+    def __init__(self, input_size, batch_size): #Might alter parameters
         super(Model, self).__init__()
 
-        self.input_size = input_size # (0, 1, 96, 1366)
+        self.input_size = input_size # (batch_size, 200, 24)
         self.hidden_size = 50
-        self.channel_axis = 1
-        self.freq_axis = 2
-        self.time_axis = 3
+        self.batch_size = batch_size
+        self.channel_axis = 0
+        self.freq_axis = 1
+        self.time_axis = 2
         self.learning_rate = 5e-3
 
         # Input block

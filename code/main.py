@@ -63,12 +63,13 @@ def main():
             'Progressive rock', '60s', 'rnb', 'indie pop',
             'sad', 'House', 'happy']
     
-    model = Model(input_size, hidden_size) ##TODO
+    inputs, labels = get_data(0, 10000)
+    model = Model(inputs.shape) ##TODO
     model.summary()
 
     start = time.time()
-    predicted = model.predict() ##TODO: inputs 400x2
-    pred
+    predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 200x24
+    results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
    
 
     for song_idx, audio_path in enumerate(audio_paths):

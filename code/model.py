@@ -1,19 +1,22 @@
 import torch as torch
 import numpy as np
 
-# Creates Model class
+# Defines Model class
 class Model(torch.nn.Module):
     def __init__(self, input_size, hidden_size): #Might alter parameters
         super(Model, self).__init__()
 
         self.input_size = input_size # 1366
         self.hidden_size = hidden_size # 50
+        self.channel_axis = 1
+        self.freq_axis = 2
+        self.time_axis = 3
         self.learning_rate = 5e-3
         self.optimizer = torch.optim.Adam(self.learning_rate)
 
         # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(37,37,0,0)) # (PadLeft, PadRight, PadTop, PadBottom)
-        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=1366) # TODO: Fix Params
+        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=96) # TODO: Fix Params
 
         #Conv Block 1
         self.conv1 = torch.nn.functional.conv2d(input=1366, weight=64, stride=3, padding='same') #TODO: input param
@@ -96,4 +99,5 @@ class Model(torch.nn.Module):
         return activated
     
     def loss():
+
 

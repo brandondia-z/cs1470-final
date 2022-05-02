@@ -50,8 +50,8 @@ def get_data(start, end):
     minlen = 200
     for dirName, subdirList, fileList in os.walk("data/MillionSongSubset"):
         for f in fileList:
-            if(i>=start):
-                if(f.endswith('.h5')):
+            if (i >= start):
+                if (f.endswith('.h5')):
                     file = h5py.File(dirName + '/' + f, 'r')
                     if(file['analysis']['segments_pitches'].shape[0]) > minlen:
                         try:

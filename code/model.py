@@ -3,9 +3,15 @@ import numpy as np
 
 # Creates Model class
 class Model(torch.nn.Module):
-    def __init__(self): #Might alter parameters
+    def __init__(self, input_size, hidden_size): #Might alter parameters
         super(Model, self).__init__()
 
+        self.input_size = input_size # 1366
+        self.hidden_size = hidden_size # 50
+        self.learning_rate = 5e-3
+        self.optimizer = torch.optim.Adam(self.learning_rate)
+
+        # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(37,37,0,0)) # (PadLeft, PadRight, PadTop, PadBottom)
         self.batchNorm1 = torch.nn.BatchNorm2d(num_features=1366) # TODO: Fix Params
 
@@ -37,6 +43,14 @@ class Model(torch.nn.Module):
         self.maxPool3 = torch.nn.MaxPool2d(kernel_size=(4,4), stride=(4,4))
         self.dropout3 = torch.nn.Dropout(p=0.1)
 
+        # GRU block 1, 2, output
+        self.GRU1 = torch.nn.GRU(input_size=1366, hidden_size=32) #TODO: input param, add more params?
+        self.GRU2 = torch.nn.GRU(input_size=1366, hidden_size=32) #TODO: input param, add more params?
+        self.dropout4 = torch.nn.Dropout(p=0.3)
+        self.forward = torch.nn.Linear(in_features=1366, out_features=50) #TODO: input param
+
+
+
         # model = nn.Sequential(torch.OrderedDict([
         #   ('conv1', torch.nn.Conv2d()),#Numbers
         #   ('BN1', torch.nn.BatchNorm2d(axis=1, mode=2)),
@@ -63,6 +77,8 @@ class Model(torch.nn.Module):
 
     def call():
         
+        #Reshape after conv 4
+
     
     def loss():
 

@@ -75,7 +75,6 @@ def get_data(start, end):
                     file.close()
                     
                     printProgressBar(i, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
-                i+=1
                 if(i>end+1):
                     tag_labels=[]
                     for tag in tags:
@@ -83,3 +82,4 @@ def get_data(start, end):
                     inputs = np.concatenate((segments_timbres, segments_pitches), axis=2)
                     print(inputs.shape)
                     return (inputs, tag_labels)
+            i+=1

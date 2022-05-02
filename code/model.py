@@ -30,21 +30,21 @@ class Model(torch.nn.Module):
         self.dropout1 = torch.nn.Dropout(p=0.1)
 
         #Conv Block 2
-        self.conv2 = torch.nn.Conv2d(in_channels=1366, out_channels=128, kernel_size=3) #TODO: input param
+        self.conv2 = torch.nn.Conv2d(in_channels=200, out_channels=128, kernel_size=3) #TODO: input param
         self.batchNorm2 = torch.nn.BatchNorm2d(num_features=self.input_size[self.channel_axis]) # TODO: Fix Params
         self.elu2 = torch.nn.ELU(alpha=1.0)
         self.maxPool2 = torch.nn.MaxPool2d(kernel_size=(3,3), stride=(3,3))
         self.dropout2 = torch.nn.Dropout(p=0.1)
 
         #Conv Block 3
-        self.conv3 = torch.nn.Conv2d(in_channels=1366, out_channels=128, kernel_size=3) #TODO: input param
+        self.conv3 = torch.nn.Conv2d(in_channels=200, out_channels=128, kernel_size=3) #TODO: input param
         self.batchNorm3 = torch.nn.BatchNorm2d(num_features=self.input_size[self.channel_axis]) # TODO: Fix Params
         self.elu3 = torch.nn.ELU(alpha=1.0)
         self.maxPool3 = torch.nn.MaxPool2d(kernel_size=(4,4), stride=(4,4))
         self.dropout3 = torch.nn.Dropout(p=0.1)
 
         #Conv Block 4
-        self.conv3 = torch.nn.Conv2d(in_channels=1366, out_channels=128, kernel_size=3) #TODO: input param
+        self.conv3 = torch.nn.Conv2d(in_channels=200, out_channels=128, kernel_size=3) #TODO: input param
         self.batchNorm3 = torch.nn.BatchNorm2d(num_features=self.input_size[self.channel_axis]) # TODO: Fix Params
         self.elu3 = torch.nn.ELU(alpha=1.0)
         self.maxPool3 = torch.nn.MaxPool2d(kernel_size=(4,4), stride=(4,4))

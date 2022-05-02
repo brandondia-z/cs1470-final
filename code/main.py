@@ -4,8 +4,7 @@ import numpy as np
 
 def main():
     print("Hello world!")
-    timbres, pitches = get_data(0, 100)
-    np.savetxt('data/processed.txt', timbres)
+    timbres, pitches = get_data(0, 10000)
     return 1
 
 

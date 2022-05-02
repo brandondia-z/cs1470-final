@@ -35,15 +35,19 @@ def get_data(start, end):
     segments_timbres = []
     segments_pitches = []
     i = 0
+    minlen = 200
     for dirName, subdirList, fileList in os.walk("data/MillionSongSubset"):
         for f in fileList:
             if(i>=start):
                 if(f.endswith('.h5')):
                     file = h5py.File(dirName + '/' + f, 'r')
-                    segments_timbres.append(np.array(file['analysis']['segments_timbre'][:]))
-                    segments_pitches.append(file['analysis']['segments_pitches'])
+                    if(file['analysis']['segments_pitches'].shape[0]) > minlen:
+                        segments_timbres.append(np.array(file['analysis']['segments_timbre'][0:minlen]))
+                        segments_pitches.append(np.array(file['analysis']['segments_pitches'][0:minlen]))
                     file.close()
-                printProgressBar(i + 1, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
+                    
+                    printProgressBar(i, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
                 i+=1
                 if(i>end+1):
+                    print(minlen)
                     return (segments_timbres, segments_pitches)

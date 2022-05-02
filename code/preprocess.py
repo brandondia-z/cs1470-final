@@ -45,8 +45,9 @@ def get_data(start, end):
                     if(file['analysis']['segments_pitches'].shape[0]) > minlen:
                         segments_timbres.append(np.array(file['analysis']['segments_timbre'][0:minlen]))
                         segments_pitches.append(np.array(file['analysis']['segments_pitches'][0:minlen]))
-                        tagfile = h5py.File("data/lastfm_subset" + dirName[-6:] + '/' + f)
-                        print(list(tagfile.keys()))
+                        print("data/lastfm_subset" + dirName[-6:] + '/' + f)
+                        # tagfile = h5py.File("data/lastfm_subset" + dirName[-6:] + '/' + f)
+                        # print(list(tagfile.keys()))
                         time.sleep(5)
                     file.close()
                     

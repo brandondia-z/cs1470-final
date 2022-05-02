@@ -30,7 +30,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 
 def get_data(start, end):
     print("Gathering data...")
-    printProgressBar(0, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
+    # printProgressBar(0, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
     f = h5py.File('data/MillionSongSubset/A/A/A/TRAAAAW128F429D538.h5', 'r')
     segments_timbres = []
     segments_pitches = []
@@ -45,12 +45,12 @@ def get_data(start, end):
                     if(file['analysis']['segments_pitches'].shape[0]) > minlen:
                         segments_timbres.append(np.array(file['analysis']['segments_timbre'][0:minlen]))
                         segments_pitches.append(np.array(file['analysis']['segments_pitches'][0:minlen]))
-                        print(dirName)
-                        print(f)
+                        tagfile = h5py.File("data/lastfm_subset" + dirName[-6:] + '/' + f)
+                        print(list(tagfile.keys()))
                         time.sleep(5)
                     file.close()
                     
-                    printProgressBar(i, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
+                    # printProgressBar(i, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
                 i+=1
                 if(i>end+1):
                     print(minlen)

@@ -1,15 +1,16 @@
+from lib2to3.pytree import LeafPattern
 import torch
 import torchvision
 import torch.nn as nn
-import torch.nn.functional as F
+from torch.nn.functional import one_hot
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from yellowbrick.classifier import ROCAUC
 from preprocess import get_data
 import numpy as np
+from sklearn.metrics import roc_auc_score
 
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else cpu)
     print("Hello world!")
     timbres, pitches = get_data(0, 100)
     np.savetxt('data/processed.txt', timbres)
@@ -35,7 +36,12 @@ def batch_data(allInputs):
     return allInputs
     #Here we re    
 
-def test(model, inputs, labels, list_of_labels):
+def test(model, inputs, labels):
+    one_hot_labels=one_hot(labels, num_classes=50)
+    probs=model.call(inputs)
+    return roc_auc_score(one_hot_labels, probs, multi_class='ovr')
+
+
     # Create an array that is of size 2xnumber of labels
     # Run call on each of the inputs and use the argmax of the logits to get the most probable label. 
     # Let n=argmax(logits of inputs) and m be the actual label.  If  is the correct label, add one to 0 x m.  If not, add 1 to 1 x m

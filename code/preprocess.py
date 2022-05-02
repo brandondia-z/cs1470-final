@@ -54,4 +54,4 @@ def get_data(start, end):
                 i+=1
                 if(i>end+1):
                     print(minlen)
-                    return (segments_timbres, segments_pitches)
+                    return (segments_timbres, segments_pitches, tags)

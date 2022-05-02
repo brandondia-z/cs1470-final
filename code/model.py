@@ -13,7 +13,7 @@ class Model(torch.nn.Module):
 
         # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(37,37,0,0)) # (PadLeft, PadRight, PadTop, PadBottom)
-        self.batchNorm1 = torch.nn.BatchNorm2d(num_features=1366) # TODO: Fix Params
+        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=1366) # TODO: Fix Params
 
         #Conv Block 1
         self.conv1 = torch.nn.functional.conv2d(input=1366, weight=64, stride=3, padding='same') #TODO: input param
@@ -47,38 +47,53 @@ class Model(torch.nn.Module):
         self.GRU1 = torch.nn.GRU(input_size=1366, hidden_size=32) #TODO: input param, add more params?
         self.GRU2 = torch.nn.GRU(input_size=1366, hidden_size=32) #TODO: input param, add more params?
         self.dropout4 = torch.nn.Dropout(p=0.3)
-        self.forward = torch.nn.Linear(in_features=1366, out_features=50) #TODO: input param
+        self.linear = torch.nn.Linear(in_features=1366, out_features=50) #TODO: input param
+        self.sigmoid = torch.nn.Sigmoid()
 
-
-
-        # model = nn.Sequential(torch.OrderedDict([
-        #   ('conv1', torch.nn.Conv2d()),#Numbers
-        #   ('BN1', torch.nn.BatchNorm2d(axis=1, mode=2)),
-        #   ('activate1', torch.nn.ELU(alpha=1.0)),
-        #   ('MaxPool1', torch.nn.MaxPool2d((2, 4))),
-
-        #   ('conv2', torch.nn.Conv2d()),#Numbers
-        #   ('BN2', torch.nn.BatchNorm2d(axis=1, mode=2)),
-        #   ('activate2', torch.nn.ELU(alpha=1.0)),
-        #   ('MaxPool2', torch.nn.MaxPool2d((3, 4))),
-
-        #   ('conv3', torch.nn.Conv2d()),#Numbers
-        #   ('BN3', torch.nn.BatchNorm2d(axis=1, mode=2)),
-        #   ('activate3', torch.nn.ELU(alpha=1.0))
-        #   ('MaxPool3', torch.nn.MaxPool2d((2, 5))),
-
-        #   ('Flatten', torch.nn.Flatten()),
-
-        #   ('Dense', torch.nn.Linear()), #Params (in_feats, out_feats)
-        #   ('DenseActivation', torch.nn.Sigmoid())
-
-        # ]))
-
-
-    def call():
+    def call(self, inputs):
         
-        #Reshape after conv 4
+        #Forward pass through pad/normalization
+        zeroPad = self.zeroPad(inputs)
+        batchNorm0 = self.batchNorm1(zeroPad)
 
+        #Pass through Conv1
+        conv1 = self.conv1(batchNorm0)
+        batchNorm1 = self.batchNorm1(conv1)
+        elu1 = self.elu1(batchNorm1)
+        maxPool1 = self.maxPool1(elu1)
+        dropout1 = self.dropout1(maxPool1)
+        
+        #Pass through Conv2
+        conv2 = self.conv2(dropout1)
+        batchNorm2 = self.batchNorm2(conv2)
+        elu2 = self.elu2(batchNorm2)
+        maxPool2 = self.maxPool2(elu2)
+        dropout2 = self.dropout2(maxPool2)
+
+        #Pass through Conv3
+        conv3 = self.conv3(dropout2)
+        batchNorm3 = self.batchNorm3(conv3)
+        elu3 = self.elu3(batchNorm3)
+        maxPool3 = self.maxPool3(elu3)
+        dropout3 = self.dropout3(maxPool3)
+
+        #Pass through Conv4
+        conv4 = self.conv4(dropout3)
+        batchNorm4 = self.batchNorm4(conv4)
+        elu4 = self.elu3(batchNorm4)
+        maxPool4 = self.maxPool3(elu4)
+        dropout4 = self.dropout3(maxPool4)
+
+        #Reshape before GRU
+        reshaped = torch.reshape(dropout4, (15, 128))
+
+        #Pass through GRU layers and final forward pass through linear layer
+        gru1 = self.GRU1(reshaped)
+        gru2 = self.GRU2(gru1)
+        linear = self.linear(gru2)
+        activated = self.sigmoid(linear)
+
+        return activated
     
     def loss():
 

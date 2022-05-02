@@ -1,5 +1,10 @@
-import torch as torch
+import torch
+import torchvision
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.utils.data import DataLoader
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Defines Model class
 class Model(torch.nn.Module):
@@ -99,5 +104,3 @@ class Model(torch.nn.Module):
         return activated
     
     def loss():
-
-

@@ -4,7 +4,7 @@ import numpy as np
 
 def main():
     print("Hello world!")
-    timbres, pitches, tags = get_data(0, 10000)
+    inputs, labels = get_data(0, 10000)
     return 1
 
 

@@ -80,4 +80,5 @@ def get_data(start, end):
                     tag_labels=[]
                     for tag in tags:
                         tag_labels.append(top_tags[tag[0]])
-                    return (segments_timbres, segments_pitches, tag_labels)
+                    inputs = np.concatenate((segments_timbres, segments_pitches), axis=2)
+                    return (inputs, tag_labels)

@@ -1,0 +1,50 @@
+rock 101071
+pop	69159
+alternative	55777
+indie	48175
+electronic	46270
+female vocalists	42565
+favorites	39921
+Love	34901
+dance	33618
+00s	31432
+alternative rock	30334
+jazz	30152
+beautiful	29421
+singer-songwriter	27910
+metal	27430
+chillout	27276
+male vocalists	27269
+Awesome	26248
+classic rock	25771
+soul	24702
+indie rock	24619
+Mellow	24356
+electronica	24087
+80s	23492
+folk	23492
+british	23033
+90s	23018
+chill	22746
+american	22694
+instrumental	21837
+punk	21203
+oldies	20979
+seen live	20705
+blues	20474
+hard rock	20241
+cool	19581
+Favorite	18864
+ambient	17982
+acoustic	17889
+experimental	17764
+Favourites	17722
+female vocalist	17328
+guitar	17302
+Hip-Hop	16712
+70s	16075
+party	15320
+country	15197
+easy listening	15076
+sexy	14706
+catchy	14490

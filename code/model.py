@@ -1,23 +1,20 @@
 import torch
 import torchvision
-import torch.nn as nn
-import torch.nn.functional as F
 from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Defines Model class
 class Model(torch.nn.Module):
-    def __init__(self, input_size, hidden_size): #Might alter parameters
+    def __init__(self, input_size): #Might alter parameters
         super(Model, self).__init__()
 
         self.input_size = input_size # (0, 1, 96, 1366)
-        self.hidden_size = hidden_size # 50
+        self.hidden_size = 50
         self.channel_axis = 1
         self.freq_axis = 2
         self.time_axis = 3
         self.learning_rate = 5e-3
-        self.optimizer = torch.optim.Adam(self.learning_rate)
 
         # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(37,37,0,0)) # (PadLeft, PadRight, PadTop, PadBottom)

@@ -1,35 +1,25 @@
 import torch
 import torchvision
-import torch.nn as nn
-import torch.nn.functional as F
+import numpy as np
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from yellowbrick.classifier import ROCAUC
 from preprocess import get_data
-import numpy as np
-
-def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else cpu)
-    print("Hello world!")
-    timbres, pitches = get_data(0, 100)
-    np.savetxt('data/processed.txt', timbres)
-    return 1
 
 def train(model, inputs, labels):
-    criterion=nn.BCELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=5e-3)
-    batches=batch_data(inputs)
-    for i in range(batches.length):
+    criterion = torch.nn.BCELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
+    batches = batch_data(inputs)
 
-        forwardProp=model.call()
-        loss=criterion(forwardProp, labels)
+    for i in range(len(batches)):
+        predictions = model(inputs)  # TODO: Make sure we are passing in the batched inputs
+        loss = criterion(predictions, labels)
+
         #Backpropagation
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
     
-    
-    model.call()
 
 def batch_data(allInputs):
     return allInputs
@@ -45,7 +35,14 @@ def test(model, inputs, labels, list_of_labels):
     visualizer.fit(X_train, y_train)        # Fit the training data to the visualizer
     visualizer.score(X_test, y_test)        # Evaluate the model on the test data
     visualizer.show()  
-    model.call()
+    model(inputs)
+
+def main():
+    device = torch.device('cuda' if torch.cuda.is_available() else cpu)
+    print("Hello world!")
+    timbres, pitches = get_data(0, 100)
+    np.savetxt('data/processed.txt', timbres)
+    return 1
 
 if __name__ == "__main__":
     main()

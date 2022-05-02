@@ -32,11 +32,20 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 def get_data(start, end):
     print("Gathering data...")
     printProgressBar(0, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
-    f = h5py.File('data/MillionSongSubset/A/A/A/TRAAAAW128F429D538.h5', 'r')
+    
+    # Get top 50 tags in last fm
+    top_tags = {}
+    with open("data/top_tags.txt") as file:
+        for line in file:
+            tokens = line.split()
+            top_tags[' '.join(tokens[0:-1])] = tokens[-1]
+
+
     segments_timbres = []
     segments_pitches = []
     tags = []
     i = 0
+    num = 0
     minlen = 200
     for dirName, subdirList, fileList in os.walk("data/MillionSongSubset"):
         for f in fileList:
@@ -44,15 +53,27 @@ def get_data(start, end):
                 if(f.endswith('.h5')):
                     file = h5py.File(dirName + '/' + f, 'r')
                     if(file['analysis']['segments_pitches'].shape[0]) > minlen:
-                        segments_timbres.append(np.array(file['analysis']['segments_timbre'][0:minlen]))
-                        segments_pitches.append(np.array(file['analysis']['segments_pitches'][0:minlen]))
-                        jfile = open("data/lastfm_subset/A/R/R/TRARRZU128F4253CA2.json")
-                        tags.append(json.load(jfile)['tags'])
-                        jfile.close()
+                        try:
+                            fat = "data/lastfm_subset" + dirName[-6:] + "/" + f[:-2] + "json"
+                            jfile = open(fat)
+                            jtags = json.load(jfile)['tags']
+                            curtag = []
+                            for tag in jtags:
+                                if tag[0] in top_tags:
+                                    if len(curtag)==0:
+                                        curtag = tag
+                                    elif top_tags[tag[0]] > top_tags[curtag[0]]:
+                                        curtag = tag
+                            jfile.close()
+                            if len(curtag) != 0:
+                                tags.append(curtag)
+                                segments_timbres.append(np.array(file['analysis']['segments_timbre'][0:minlen]))
+                                segments_pitches.append(np.array(file['analysis']['segments_pitches'][0:minlen]))
+                        except:
+                            pass
                     file.close()
                     
                     printProgressBar(i, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
                 i+=1
                 if(i>end+1):
-                    print(minlen)
                     return (segments_timbres, segments_pitches, tags)

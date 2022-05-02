@@ -9,9 +9,10 @@ class Model(torch.nn.Module):
     def __init__(self, input_size, batch_size): #Might alter parameters
         super(Model, self).__init__()
 
-        self.input_size = input_size # (batch_size, 200, 24)
+        self.input_size = input_size # (batch_size, 200, 24) 1 96 1366
+        self.channel_axis = 0
         self.hidden_size = 50
-        self.batch_size = batch_size
+        self.batch_size = batch_size # (batch_size, 200, 24)
         self.channel_axis = 0
         self.freq_axis = 1
         self.time_axis = 2
@@ -22,7 +23,7 @@ class Model(torch.nn.Module):
         self.batchNorm0 = torch.nn.BatchNorm2d(num_features=self.input_size[self.freq_axis]) # TODO: Fix Params
 
         #Conv Block 1
-        self.conv1 = torch.nn.functional.conv2d(input=1366, weight=64, stride=3, padding='same') #TODO: input param
+        self.conv1 = torch.nn.functional.conv2d(input=200, weight=64, stride=3, padding='same') #TODO: input param
         self.batchNorm1 = torch.nn.BatchNorm2d(num_features=self.input_size[self.channel_axis]) # TODO: Fix Params
         self.elu1 = torch.nn.ELU(alpha=1.0)
         self.maxPool1 = torch.nn.MaxPool2d(kernel_size=(2,2), stride=(2,2))
@@ -50,10 +51,10 @@ class Model(torch.nn.Module):
         self.dropout3 = torch.nn.Dropout(p=0.1)
 
         # GRU block 1, 2, output
-        self.GRU1 = torch.nn.GRU(input_size=1366, hidden_size=32) #TODO: input param, add more params?
-        self.GRU2 = torch.nn.GRU(input_size=1366, hidden_size=32) #TODO: input param, add more params?
+        self.GRU1 = torch.nn.GRU(input_size=200, hidden_size=32) #TODO: input param, add more params?
+        self.GRU2 = torch.nn.GRU(input_size=200, hidden_size=32) #TODO: input param, add more params?
         self.dropout4 = torch.nn.Dropout(p=0.3)
-        self.linear = torch.nn.Linear(in_features=1366, out_features=self.hidden_size) #TODO: input param
+        self.linear = torch.nn.Linear(in_features=200, out_features=self.hidden_size) #TODO: input param
         self.sigmoid = torch.nn.Sigmoid()
 
     def call(self, inputs):

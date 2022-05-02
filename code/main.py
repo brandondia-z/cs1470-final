@@ -69,6 +69,7 @@ def main():
 
     start = time.time()
     predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 200x24
+    print "Training is done. It took %d seconds." % (time.time()-start)
     results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
    
 

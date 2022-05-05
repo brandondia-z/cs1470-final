@@ -7,6 +7,7 @@ from yellowbrick.classifier import ROCAUC
 from preprocess import get_data
 from model import Model
 import time
+import sys
 
 def train(model, inputs, labels):
     criterion = torch.nn.BCELoss()
@@ -14,7 +15,11 @@ def train(model, inputs, labels):
     batches = batch_data(inputs)
 
     for i in range(len(batches)):
-        predictions = model(inputs)  # TODO: Make sure we are passing in the batched inputs
+        inputs = torch.from_numpy(inputs)
+        inputs = inputs.type(torch.FloatTensor)
+        labels = torch.FloatTensor(labels)
+
+        predictions = model.call(inputs.unsqueeze(0))  # TODO: Make sure we are passing in the batched inputs
         loss = criterion(predictions, labels)
 
         #Backpropagation
@@ -48,34 +53,38 @@ def sort_result(tags, predictions):
   return tag_list
 
 def main():
+    if sys.argv[len(sys.argv)-1] != "BIG":
 
+        tags = ['rock', 'pop', 'alternative', 'indie', 'electronic',
+                'female vocalists', 'dance', '00s', 'alternative rock', 'jazz',
+                'beautiful', 'metal', 'chillout', 'male vocalists',
+                'classic rock', 'soul', 'indie rock', 'Mellow', 'electronica',
+                '80s', 'folk', '90s', 'chill', 'instrumental', 'punk',
+                'oldies', 'blues', 'hard rock', 'ambient', 'acoustic',
+                'experimental', 'female vocalist', 'guitar', 'Hip-Hop',
+                '70s', 'party', 'country', 'easy listening',
+                'sexy', 'catchy', 'funk', 'electro', 'heavy metal',
+                'Progressive rock', '60s', 'rnb', 'indie pop',
+                'sad', 'House', 'happy']
+        
+        inputs, labels = get_data(0, 10000)
+        model = Model(inputs.shape) ##TODO
+        print(inputs.shape)
+        # model.summary()
 
-    tags = ['rock', 'pop', 'alternative', 'indie', 'electronic',
-            'female vocalists', 'dance', '00s', 'alternative rock', 'jazz',
-            'beautiful', 'metal', 'chillout', 'male vocalists',
-            'classic rock', 'soul', 'indie rock', 'Mellow', 'electronica',
-            '80s', 'folk', '90s', 'chill', 'instrumental', 'punk',
-            'oldies', 'blues', 'hard rock', 'ambient', 'acoustic',
-            'experimental', 'female vocalist', 'guitar', 'Hip-Hop',
-            '70s', 'party', 'country', 'easy listening',
-            'sexy', 'catchy', 'funk', 'electro', 'heavy metal',
-            'Progressive rock', '60s', 'rnb', 'indie pop',
-            'sad', 'House', 'happy']
+        start = time.time()
+        predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 3161,200,24
+        print ("Training is done. It took %d seconds." % (time.time()-start))
+        results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
     
-    inputs, labels = get_data(0, 10000)
-    model = Model(inputs.shape) ##TODO
-    model.summary()
 
-    start = time.time()
-    predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 200x24
-    print ("Training is done. It took %d seconds." % (time.time()-start)) 
-    results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
-   
+        for song_idx, audio_path in enumerate(audio_paths):
+            sorted = sort_result(tags, predicted[song_idx:].tolist())
+            print(audio_path)
+            print(sorted[:10])
 
-    for song_idx, audio_path in enumerate(audio_paths):
-      sorted = sort_result(tags, predicted[song_idx:].tolist())
-      print(audio_path)
-      print(sorted[:10])
+    else:
+        print("hello world")
 
     return
 

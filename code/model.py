@@ -99,5 +99,3 @@ class Model(torch.nn.Module):
         activated = self.sigmoid(linear)
 
         return activated
-    
-    def loss():

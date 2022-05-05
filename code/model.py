@@ -102,4 +102,3 @@ class Model(torch.nn.Module):
 
         return activated
     
-    def loss():

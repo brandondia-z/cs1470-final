@@ -49,7 +49,6 @@ def sort_result(tags, predictions):
 
 def main():
 
-    audio_paths = [] ## TODO
 
     tags = ['rock', 'pop', 'alternative', 'indie', 'electronic',
             'female vocalists', 'dance', '00s', 'alternative rock', 'jazz',
@@ -69,7 +68,7 @@ def main():
 
     start = time.time()
     predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 200x24
-    print "Training is done. It took %d seconds." % (time.time()-start)
+    print ("Training is done. It took %d seconds." % (time.time()-start)) 
     results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
    
 

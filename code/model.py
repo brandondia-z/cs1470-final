@@ -10,7 +10,7 @@ class Model(torch.nn.Module):
         super(Model, self).__init__()
 
         self.input_size = input_size # (batch_size, 200, 24) => 1, 96, 1366
-        self.hidden_size = 32
+        self.hidden_size = 50
         self.channel_axis = 0
         self.freq_axis = 1
         self.time_axis = 2

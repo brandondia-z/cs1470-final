@@ -16,7 +16,7 @@ def train(model, inputs, labels):
     for i in range(len(batches)):
         inputs = torch.from_numpy(inputs)
         inputs = inputs.type(torch.FloatTensor)
-        # labels = torch.from_numpy(labels)
+        labels = torch.FloatTensor(labels)
 
         predictions = model.call(inputs.unsqueeze(0))  # TODO: Make sure we are passing in the batched inputs
         loss = criterion(predictions, labels)
@@ -71,7 +71,7 @@ def main():
     # model.summary()
 
     start = time.time()
-    predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 200x24
+    predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 3161,200,24
     print ("Training is done. It took %d seconds." % (time.time()-start))
     results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
    

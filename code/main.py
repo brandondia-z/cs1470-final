@@ -14,7 +14,11 @@ def train(model, inputs, labels):
     batches = batch_data(inputs)
 
     for i in range(len(batches)):
-        predictions = model(inputs)  # TODO: Make sure we are passing in the batched inputs
+        inputs = torch.from_numpy(inputs)
+        inputs = inputs.type(torch.FloatTensor)
+        # labels = torch.from_numpy(labels)
+
+        predictions = model.call(inputs.unsqueeze(0))  # TODO: Make sure we are passing in the batched inputs
         loss = criterion(predictions, labels)
 
         #Backpropagation
@@ -49,8 +53,6 @@ def sort_result(tags, predictions):
 
 def main():
 
-    audio_paths = [] ## TODO
-
     tags = ['rock', 'pop', 'alternative', 'indie', 'electronic',
             'female vocalists', 'dance', '00s', 'alternative rock', 'jazz',
             'beautiful', 'metal', 'chillout', 'male vocalists',
@@ -65,7 +67,8 @@ def main():
     
     inputs, labels = get_data(0, 10000)
     model = Model(inputs.shape) ##TODO
-    model.summary()
+    print(inputs.shape)
+    # model.summary()
 
     start = time.time()
     predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 200x24

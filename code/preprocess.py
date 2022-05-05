@@ -55,8 +55,7 @@ def get_data(start, end):
                     file = h5py.File(dirName + '/' + f, 'r')
                     if(file['analysis']['segments_pitches'].shape[0]) > minlen:
                         try:
-                            fat = "data/lastfm_subset" + dirName[-6:] + "/" + f[:-2] + "json"
-                            jfile = open(fat)
+                            jfile = open("data/lastfm_subset" + dirName[-6:] + "/" + f[:-2] + "json")
                             jtags = json.load(jfile)['tags']
                             curtag = []
                             for tag in jtags:

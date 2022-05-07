@@ -78,11 +78,6 @@ def main():
         results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
     
 
-        for song_idx, audio_path in enumerate(audio_paths):
-            sorted = sort_result(tags, predicted[song_idx:].tolist())
-            print(audio_path)
-            print(sorted[:10])
-
     else:
         print("hello world")
 

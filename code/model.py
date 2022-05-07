@@ -6,10 +6,9 @@ import matplotlib.pyplot as plt
 
 # Defines Model class
 class Model(torch.nn.Module):
-    def __init__(self, input_size): #Might alter parameters
+    def __init__(self): #Might alter parameters
         super(Model, self).__init__()
 
-        self.input_size = input_size # (batch_size, 200, 24) => 1, 96, 1366
         self.hidden_size = 50
         self.channel_axis = 0
         self.freq_axis = 1
@@ -18,10 +17,10 @@ class Model(torch.nn.Module):
 
         # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(10, 10, 0, 0)) # (PadLeft, PadRight, PadTop, PadBottom)
-        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=3161) # TODO: Fix Params
+        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=1) # TODO: Fix Params
 
         #Conv Block 1
-        self.conv1 = torch.nn.Conv2d(in_channels=3161, out_channels=32, kernel_size=3, padding='same') #TODO: input param
+        self.conv1 = torch.nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding='same') #TODO: input param
         self.batchNorm1 = torch.nn.BatchNorm2d(num_features=32) # TODO: Fix Params
         self.elu1 = torch.nn.ELU(alpha=1.0)
         self.maxPool1 = torch.nn.MaxPool2d(kernel_size=(2,2), stride=(2,2))
@@ -90,7 +89,7 @@ class Model(torch.nn.Module):
         dropout4 = self.dropout4(maxPool4)
 
         #Reshape before GRU
-        print(dropout4.shape)
+        # print(dropout4.shape)
         reshaped = torch.reshape(dropout4, (8, 200)) # TODO: Change shape
 
         #Pass through GRU layers and final forward pass through linear layer
@@ -101,7 +100,4 @@ class Model(torch.nn.Module):
         activated = self.sigmoid(linear)
 
         return activated
-<<<<<<< HEAD
     
-=======
->>>>>>> 32c6f53bcf4815471e7407c2475e00264c590b06

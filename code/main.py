@@ -12,14 +12,14 @@ import sys
 def train(model, inputs, labels):
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
-    batches = batch_data(inputs)
+    batches = list(batch_data(inputs, 100))
 
-    for i in range(len(batches)):
-        inputs = torch.from_numpy(inputs)
-        inputs = inputs.type(torch.FloatTensor)
+    for batch in batches:
+        inp = torch.from_numpy(batch)
+        inp = inp.type(torch.FloatTensor)
         labels = torch.FloatTensor(labels)
 
-        predictions = model.call(inputs.unsqueeze(0))  # TODO: Make sure we are passing in the batched inputs
+        predictions = model.call(inp)  # TODO: Make sure we are passing in the batched inputs
         loss = criterion(predictions, labels)
 
         #Backpropagation
@@ -28,9 +28,9 @@ def train(model, inputs, labels):
         optimizer.step()
     
 
-def batch_data(allInputs):
-    return allInputs
-    #Here we re    
+def batch_data(l, n):
+    n = max(1, n)
+    return (l[i:i+n] for i in range(0, l.shape[0], n))  
 
 def test(model, inputs, labels, list_of_labels):
     # Create an array that is of size 2xnumber of labels
@@ -68,12 +68,12 @@ def main():
                 'sad', 'House', 'happy']
         
         inputs, labels = get_data(0, 10000)
-        model = Model(inputs.shape) ##TODO
-        print(inputs.shape)
+        model = Model() ##TODO
         # model.summary()
 
         start = time.time()
-        predicted = train(model=model, inputs=inputs, labels=labels) ##TODO: inputs 3161,200,24
+        testInputs = np.reshape(inputs, (3161, 1, 200, 24))
+        predicted = train(model=model, inputs=testInputs, labels=labels) ##TODO: inputs 3161,200,24
         print ("Training is done. It took %d seconds." % (time.time()-start))
         results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
     

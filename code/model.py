@@ -3,6 +3,7 @@ import torchvision
 from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 # Defines Model class
 class Model(torch.nn.Module):
@@ -14,6 +15,7 @@ class Model(torch.nn.Module):
         self.freq_axis = 1
         self.time_axis = 2
         self.learning_rate = 5e-3
+        self.batch_size = 100
 
         # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(10, 10, 0, 0)) # (PadLeft, PadRight, PadTop, PadBottom)
@@ -89,11 +91,12 @@ class Model(torch.nn.Module):
         dropout4 = self.dropout4(maxPool4)
 
         #Reshape before GRU
-        # print(dropout4.shape)
-        reshaped = torch.reshape(dropout4, (8, 200)) # TODO: Change shape
+        print(dropout4.shape)
+        # time.sleep(5)
+        reshaped = torch.reshape(dropout4, (200, 8)) # TODO: Change shape
 
         #Pass through GRU layers and final forward pass through linear layer
-        gru1, hiddenState1 = self.GRU1(reshaped)
+        gru1, hiddenState1 = self.GRU1(dropout4)
         gru2, hiddenState2 = self.GRU2(gru1)
         gru_drop = self.dropout5(gru2)
         linear = self.linear(gru_drop)

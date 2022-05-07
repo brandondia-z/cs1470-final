@@ -3,25 +3,26 @@ import torchvision
 from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 # Defines Model class
 class Model(torch.nn.Module):
-    def __init__(self, input_size): #Might alter parameters
+    def __init__(self): #Might alter parameters
         super(Model, self).__init__()
 
-        self.input_size = input_size # (batch_size, 200, 24) => 1, 96, 1366
         self.hidden_size = 50
         self.channel_axis = 0
         self.freq_axis = 1
         self.time_axis = 2
         self.learning_rate = 5e-3
+        self.batch_size = 100
 
         # Input block
         self.zeroPad = torch.nn.ZeroPad2d(padding=(10, 10, 0, 0)) # (PadLeft, PadRight, PadTop, PadBottom)
-        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=3161) # TODO: Fix Params
+        self.batchNorm0 = torch.nn.BatchNorm2d(num_features=1) # TODO: Fix Params
 
         #Conv Block 1
-        self.conv1 = torch.nn.Conv2d(in_channels=3161, out_channels=32, kernel_size=3, padding='same') #TODO: input param
+        self.conv1 = torch.nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding='same') #TODO: input param
         self.batchNorm1 = torch.nn.BatchNorm2d(num_features=32) # TODO: Fix Params
         self.elu1 = torch.nn.ELU(alpha=1.0)
         self.maxPool1 = torch.nn.MaxPool2d(kernel_size=(2,2), stride=(2,2))
@@ -91,13 +92,15 @@ class Model(torch.nn.Module):
 
         #Reshape before GRU
         print(dropout4.shape)
-        reshaped = torch.reshape(dropout4, (8, 200)) # TODO: Change shape
+        # time.sleep(5)
+        reshaped = torch.reshape(dropout4, (200, 8)) # TODO: Change shape
 
         #Pass through GRU layers and final forward pass through linear layer
-        gru1, hiddenState1 = self.GRU1(reshaped)
+        gru1, hiddenState1 = self.GRU1(dropout4)
         gru2, hiddenState2 = self.GRU2(gru1)
         gru_drop = self.dropout5(gru2)
         linear = self.linear(gru_drop)
         activated = self.sigmoid(linear)
 
         return activated
+    

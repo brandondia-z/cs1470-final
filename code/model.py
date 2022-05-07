@@ -101,7 +101,3 @@ class Model(torch.nn.Module):
         activated = self.sigmoid(linear)
 
         return activated
-<<<<<<< HEAD
-    
-=======
->>>>>>> 32c6f53bcf4815471e7407c2475e00264c590b06

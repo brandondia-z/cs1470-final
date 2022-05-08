@@ -12,15 +12,17 @@ import sys
 def train(model, inputs, labels):
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
-    batches = list(batch_data(inputs, 100))
+    batch_inputs = list(batch_data(inputs, 100))
+    batch_labels= list(batch_data(labels, 100))
+    batches = (batch_inputs, bach_labels)
 
-    for batch in batches:
-        inp = torch.from_numpy(batch)
+    for batchin, batchlab in batches:
+        inp = torch.from_numpy(batchin)
         inp = inp.type(torch.FloatTensor)
-        labels = torch.FloatTensor(labels)
+        lab = torch.FloatTensor(batchlab)
 
         predictions = model.call(inp)  # TODO: Make sure we are passing in the batched inputs
-        loss = criterion(predictions, labels)
+        loss = criterion(predictions, lab)
 
         #Backpropagation
         optimizer.zero_grad()

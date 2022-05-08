@@ -50,7 +50,7 @@ class Model(torch.nn.Module):
         self.dropout4 = torch.nn.Dropout(p=0.1)
 
         # GRU block 1, 2, output
-        self.GRU1 = torch.nn.GRU(input_size=200, hidden_size=128) #TODO: input param, add more params?
+        self.GRU1 = torch.nn.GRU(input_size=1600, hidden_size=128) #TODO: input param, add more params?
         self.GRU2 = torch.nn.GRU(input_size=128, hidden_size=64) #TODO: input param, add more params?
         self.dropout5 = torch.nn.Dropout(p=0.3)
         self.linear = torch.nn.Linear(in_features=64, out_features=self.hidden_size) #TODO: input param
@@ -91,12 +91,10 @@ class Model(torch.nn.Module):
         dropout4 = self.dropout4(maxPool4)
 
         #Reshape before GRU
-        print(dropout4.shape)
-        # time.sleep(5)
-        reshaped = torch.reshape(dropout4, (200, 8)) # TODO: Change shape
+        flat= torch.flatten(dropout4, start_dim=1)
 
         #Pass through GRU layers and final forward pass through linear layer
-        gru1, hiddenState1 = self.GRU1(dropout4)
+        gru1, hiddenState1 = self.GRU1(flat)
         gru2, hiddenState2 = self.GRU2(gru1)
         gru_drop = self.dropout5(gru2)
         linear = self.linear(gru_drop)

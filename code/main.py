@@ -13,26 +13,32 @@ def train(model, inputs, labels):
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
     batch_inputs = list(batch_data(inputs, 100))
-    batch_labels= list(batch_data(labels, 100))
-    batches = (batch_inputs, bach_labels)
-
-    for batchin, batchlab in batches:
+    batch_labels= list(batch_labs(labels, 100))
+    
+    for i in range(len(batch_inputs)):
+        batchin = batch_inputs[i]
+        batchlab = batch_labels[i]
         inp = torch.from_numpy(batchin)
         inp = inp.type(torch.FloatTensor)
         lab = torch.FloatTensor(batchlab)
+        # breakpoint()
+        one_hot= torch.nn.functional.one_hot(lab.to(torch.int64), num_classes=50)
 
         predictions = model.call(inp)  # TODO: Make sure we are passing in the batched inputs
-        loss = criterion(predictions, lab)
+        loss = criterion(predictions.to(torch.float32), one_hot.to(torch.float32))
 
         #Backpropagation
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
     
-
 def batch_data(l, n):
     n = max(1, n)
-    return (l[i:i+n] for i in range(0, l.shape[0], n))  
+    return (l[i:i+n] for i in range(0, l.shape[0], n))
+
+def batch_labs(l, n):
+    n = max(1, n)
+    return (l[i:i+n] for i in range(0, len(l), n))  
 
 def test(model, inputs, labels, list_of_labels):
     # Create an array that is of size 2xnumber of labels

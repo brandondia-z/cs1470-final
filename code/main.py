@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from yellowbrick.classifier import ROCAUC
 from preprocess import get_data
 from model import Model
+from sklearn import metrics
 import time
 import sys
 
@@ -46,11 +47,13 @@ def test(model, inputs, labels, list_of_labels):
     # Let n=argmax(logits of inputs) and m be the actual label.  If  is the correct label, add one to 0 x m.  If not, add 1 to 1 x m
     # 
     #Here we do the AUC-ROC calculation.
-    visualizer = ROCAUC(model, classes=[list_of_labels])
-    visualizer.fit(X_train, y_train)        # Fit the training data to the visualizer
-    visualizer.score(X_test, y_test)        # Evaluate the model on the test data
-    visualizer.show()  
-    model(inputs)
+    inp = torch.from_numpy(inputs)
+    inp = inp.type(torch.FloatTensor)
+    lab = torch.FloatTensor(labels)
+    
+    results = model.call(inp)
+    score= metrics.roc_auc_score(lab, results, multi_class='ovr')
+    print(score)
 
 def sort_result(tags, predictions):
   zipped = zip(tags, predictions)
@@ -75,15 +78,17 @@ def main():
                 'Progressive rock', '60s', 'rnb', 'indie pop',
                 'sad', 'House', 'happy']
         
-        inputs, labels = get_data(0, 10000)
+        train_inputs, train_labels = get_data(0, 7000)
+        test_inputs, test_labels = get_data(7000,10000)
         model = Model() ##TODO
         # model.summary()
 
         start = time.time()
-        testInputs = np.reshape(inputs, (3161, 1, 200, 24))
-        predicted = train(model=model, inputs=testInputs, labels=labels) ##TODO: inputs 3161,200,24
+        training = np.reshape(train_inputs, (-1, 1, 200, 24))
+        testing = np.reshape(test_inputs, (-1, 1, 200, 24))
+        predicted = train(model=model, inputs=training, labels=train_labels) ##TODO: inputs 3161,200,24
         print ("Training is done. It took %d seconds." % (time.time()-start))
-        results = test(model=model, inputs=inputs, labels=labels, list_of_labels=tags)
+        results = test(model=model, inputs=testing, labels=test_labels, list_of_labels=tags)
     
 
     else:

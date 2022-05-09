@@ -73,7 +73,7 @@ def get_data(start, end):
                             pass
                     file.close()
                     
-                    printProgressBar(i, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
+                    printProgressBar(i-start, (end-start), prefix = 'Progress:', suffix = 'Complete', length = 50)
                 if(i>end+1):
                     tag_labels=[]
                     for tag in tags:

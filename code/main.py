@@ -52,8 +52,14 @@ def test(model, inputs, labels, list_of_labels):
     lab = torch.FloatTensor(labels)
     
     results = model.call(inp)
-    score= metrics.roc_auc_score(lab, results, multi_class='ovr')
-    print(score)
+    thing = torch.argmax(results, dim=1)
+    corr = (np.array(thing) == labels)
+    res = corr.sum() / len(corr)
+    print(corr.sum() / len(corr))
+    # res = torch.sum(thing*lab/thing)
+    # score= metrics.roc_auc_score(lab, results, multi_class='ovr')
+    # print(score)
+    # print(res)
 
 def sort_result(tags, predictions):
   zipped = zip(tags, predictions)

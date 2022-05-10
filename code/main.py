@@ -9,29 +9,36 @@ from model import Model
 from sklearn import metrics
 import time
 import sys
+from preprocessed_parsed import get_parsed
+import pickle
 
-def train(model, inputs, labels):
+def train(model, inputs, labels, device='cpu', loss_array=[]):
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
     batch_inputs = list(batch_data(inputs, 100))
     batch_labels= list(batch_labs(labels, 100))
     
+    loss_sum = 0
     for i in range(len(batch_inputs)):
         batchin = batch_inputs[i]
         batchlab = batch_labels[i]
         inp = torch.from_numpy(batchin)
-        inp = inp.type(torch.FloatTensor)
-        lab = torch.FloatTensor(batchlab)
+        inp = inp.type(torch.FloatTensor).to(device)
+        lab = torch.FloatTensor(batchlab).to(device)
         # breakpoint()
         one_hot= torch.nn.functional.one_hot(lab.to(torch.int64), num_classes=50)
 
         predictions = model.call(inp)  # TODO: Make sure we are passing in the batched inputs
         loss = criterion(predictions.to(torch.float32), one_hot.to(torch.float32))
+        loss_sum += loss
 
         #Backpropagation
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+    loss_sum/=len(batch_inputs)
+    loss_array.append(loss_sum)
     
 def batch_data(l, n):
     n = max(1, n)
@@ -41,25 +48,33 @@ def batch_labs(l, n):
     n = max(1, n)
     return (l[i:i+n] for i in range(0, len(l), n))  
 
-def test(model, inputs, labels, list_of_labels):
+def test(model, inputs, labels, list_of_labels, device='cpu'):
     # Create an array that is of size 2xnumber of labels
     # Run call on each of the inputs and use the argmax of the logits to get the most probable label. 
     # Let n=argmax(logits of inputs) and m be the actual label.  If  is the correct label, add one to 0 x m.  If not, add 1 to 1 x m
     # 
     #Here we do the AUC-ROC calculation.
     inp = torch.from_numpy(inputs)
-    inp = inp.type(torch.FloatTensor)
-    lab = torch.FloatTensor(labels)
+    inp = inp.type(torch.FloatTensor).to(device)
+    lab = torch.FloatTensor(labels).to(device)
     
-    results = model.call(inp)
-    thing = torch.argmax(results, dim=1)
-    corr = (np.array(thing) == labels)
-    res = corr.sum() / len(corr)
-    print(corr.sum() / len(corr))
-    # res = torch.sum(thing*lab/thing)
-    # score= metrics.roc_auc_score(lab, results, multi_class='ovr')
-    # print(score)
-    # print(res)
+    batch_inputs = list(batch_data(inputs, 100))
+    batch_labels= list(batch_labs(labels, 100))
+
+    total = 0
+    for i in range(len(batch_inputs)):
+        batchin = batch_inputs[i]
+        batchlab = batch_labels[i]
+        inp = torch.from_numpy(batchin)
+        inp = inp.type(torch.FloatTensor).to(device)
+        lab = torch.FloatTensor(batchlab)
+
+        predictions = model.call(inp)
+        thing = torch.argmax(predictions, dim=1)
+        corr = (np.array(thing.cpu()) == batchlab)
+        res = corr.sum() / len(corr)
+        total += res
+    return total/len(batch_inputs)
 
 def sort_result(tags, predictions):
   zipped = zip(tags, predictions)
@@ -70,9 +85,7 @@ def sort_result(tags, predictions):
   return tag_list
 
 def main():
-    if sys.argv[len(sys.argv)-1] != "BIG":
-
-        tags = ['rock', 'pop', 'alternative', 'indie', 'electronic',
+    tags = ['rock', 'pop', 'alternative', 'indie', 'electronic',
                 'female vocalists', 'dance', '00s', 'alternative rock', 'jazz',
                 'beautiful', 'metal', 'chillout', 'male vocalists',
                 'classic rock', 'soul', 'indie rock', 'Mellow', 'electronica',
@@ -83,11 +96,12 @@ def main():
                 'sexy', 'catchy', 'funk', 'electro', 'heavy metal',
                 'Progressive rock', '60s', 'rnb', 'indie pop',
                 'sad', 'House', 'happy']
-        
+
+    model = Model() ##TODO
+
+    if sys.argv[len(sys.argv)-1] != "BIG":
         train_inputs, train_labels = get_data(0, 7000)
         test_inputs, test_labels = get_data(7000,10000)
-        model = Model() ##TODO
-        # model.summary()
 
         start = time.time()
         training = np.reshape(train_inputs, (-1, 1, 200, 24))
@@ -96,10 +110,39 @@ def main():
         print ("Training is done. It took %d seconds." % (time.time()-start))
         results = test(model=model, inputs=testing, labels=test_labels, list_of_labels=tags)
     
+    elif sys.argv[len(sys.argv)-1] == "BIG":
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        model.to(device)
 
-    else:
-        print("hello world")
+        epochs = 20
+        accuracy_array = []
+        loss_array = []
+        for i in range(epochs):
+            num_megabatches = 32
 
+            for i in range(num_megabatches):
+                inputs, labels = get_parsed(i)
+                train_inputs = inputs[0:7000]
+                train_labels = labels[0:7000]
+                test_inputs = inputs[7000:10000]
+                test_labels = labels[7000:10000]
+
+                training = np.reshape(train_inputs, (-1, 1, 200, 24))
+                testing = np.reshape(test_inputs, (-1, 1, 200, 24))
+                
+                training = np.reshape(train_inputs, (-1, 1, 200, 24))
+                testing = np.reshape(test_inputs, (-1, 1, 200, 24))
+                start = time.time()
+                predicted = train(model=model, inputs=training, labels=train_labels, device=device, loss_array=loss_array) ##TODO: inputs 3161,200,24
+
+            results = test(model=model, inputs=testing, labels=test_labels, list_of_labels=tags, device=device)
+            accuracy_array.append(results)
+        
+        with open (f'results/accuracy', 'wb') as fp:
+            pickle.dump(accuracy_array, fp)
+        with open (f'results/loss', 'wb') as fp:
+            pickle.dump(loss_array, fp)
+            
     return
 
 if __name__ == "__main__":

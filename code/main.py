@@ -168,8 +168,8 @@ def main():
             pickle.dump(loss_array, fp)
         
         # Not sure if you can use both of these on the same run, but if you want to comment one out and then run again with the other that works too
-        visualize_loss(losses=loss_array)
-        visualize_acc(accuracies=accuracy_array)
+        # visualize_loss(losses=loss_array)
+        # visualize_acc(accuracies=accuracy_array)
         #Also maybe we could play around with a visualize results function ?? Similar to the one in hw2
             
     return

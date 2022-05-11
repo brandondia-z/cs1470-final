@@ -20,6 +20,23 @@ def visualize_loss(losses):
     plt.ylabel('Loss')
     plt.show()  
 
+def visualize_acc(accuracies): 
+    """
+    Uses Matplotlib to visualize the losses of our model.
+    :param losses: list of loss data stored from train. Can use the model's loss_list 
+    field 
+
+    NOTE: DO NOT EDIT
+
+    :return: doesn't return anything, a plot should pop-up 
+    """
+    x = [i for i in range(len(accuracies))]
+    plt.plot(x, accuracies)
+    plt.title('Accuracy per batch')
+    plt.xlabel('Batch')
+    plt.ylabel('Accuracy')
+    plt.show()  
+
 def train(model, inputs, labels, device='cpu', loss_array=[]):
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
@@ -150,7 +167,10 @@ def main():
         with open (f'results/loss', 'wb') as fp:
             pickle.dump(loss_array, fp)
         
+        # Not sure if you can use both of these on the same run, but if you want to comment one out and then run again with the other that works too
         visualize_loss(losses=loss_array)
+        visualize_acc(accuracies=accuracy_array)
+        #Also maybe we could play around with a visualize results function ?? Similar to the one in hw2
             
     return
 

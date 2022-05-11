@@ -12,6 +12,14 @@ import sys
 from preprocessed_parsed import get_parsed
 import pickle
 
+def visualize_loss(losses):
+    x = [i for i in range(len(losses))]
+    plt.plot(x, losses)
+    plt.title('Loss per batch')
+    plt.xlabel('Batch')
+    plt.ylabel('Loss')
+    plt.show()  
+
 def train(model, inputs, labels, device='cpu', loss_array=[]):
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
@@ -25,10 +33,9 @@ def train(model, inputs, labels, device='cpu', loss_array=[]):
         inp = torch.from_numpy(batchin)
         inp = inp.type(torch.FloatTensor).to(device)
         lab = torch.FloatTensor(batchlab).to(device)
-        # breakpoint()
         one_hot= torch.nn.functional.one_hot(lab.to(torch.int64), num_classes=50)
 
-        predictions = model.call(inp)  # TODO: Make sure we are passing in the batched inputs
+        predictions = model.call(inp)
         loss = criterion(predictions.to(torch.float32), one_hot.to(torch.float32))
         loss_sum += loss
 
@@ -37,8 +44,8 @@ def train(model, inputs, labels, device='cpu', loss_array=[]):
         loss.backward()
         optimizer.step()
 
-    loss_sum/=len(batch_inputs)
-    loss_array.append(loss_sum)
+        loss_sum/=len(batch_inputs)
+        loss_array.append(loss_sum)
     
 def batch_data(l, n):
     n = max(1, n)
@@ -97,7 +104,7 @@ def main():
                 'Progressive rock', '60s', 'rnb', 'indie pop',
                 'sad', 'House', 'happy']
 
-    model = Model() ##TODO
+    model = Model()
 
     if sys.argv[len(sys.argv)-1] != "BIG":
         train_inputs, train_labels = get_data(0, 7000)
@@ -106,7 +113,7 @@ def main():
         start = time.time()
         training = np.reshape(train_inputs, (-1, 1, 200, 24))
         testing = np.reshape(test_inputs, (-1, 1, 200, 24))
-        predicted = train(model=model, inputs=training, labels=train_labels) ##TODO: inputs 3161,200,24
+        predicted = train(model=model, inputs=training, labels=train_labels)
         print ("Training is done. It took %d seconds." % (time.time()-start))
         results = test(model=model, inputs=testing, labels=test_labels, list_of_labels=tags)
     
@@ -142,6 +149,8 @@ def main():
             pickle.dump(accuracy_array, fp)
         with open (f'results/loss', 'wb') as fp:
             pickle.dump(loss_array, fp)
+        
+        visualize_loss(losses=loss_array)
             
     return
 
